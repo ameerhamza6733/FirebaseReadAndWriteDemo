@@ -1,7 +1,15 @@
 package com.example.ameerhamza.firebabseyoutubetest;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.hardware.Camera;
+import android.hardware.camera2.CameraAccessException;
+import android.hardware.camera2.CameraManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.speech.RecognizerIntent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -21,6 +29,8 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -30,11 +40,12 @@ public class MainActivity extends AppCompatActivity {
     private EditText mName;
     private EditText mEmail;
     private EditText mAge;
-    private TextView mEmailTextView,mNameTextView;
+
 
     private Student student;
     private String TAG="MainActivity";
     private DatabaseReference myRef;
+
 
 
     @Override
@@ -47,9 +58,16 @@ public class MainActivity extends AppCompatActivity {
         mEmail = (EditText) findViewById(R.id.mUploadEmailId);
         mAge = (EditText) findViewById(R.id.mUploadAge);
 
+
+
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         //DataBase raf
-         final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
         myRef = database.getReference();
+        myRef.keepSynced(true);
+
+
+
         readFromDataBase = (Button) findViewById(R.id.m_read_button);
 
         // Write to database
@@ -58,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-               // String outout=new Translate(sl, tl, text)
+                // String outout=new Translate(sl, tl, text)
 
 
                 student = new Student(mEmail.getText().toString(), Integer.parseInt(mAge.getText().toString()), mName.getText().toString());
@@ -87,13 +105,13 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
 
-                        Log.e("Count",""+dataSnapshot.getChildrenCount());
-                        for(DataSnapshot mydata : dataSnapshot.getChildren()){
+                        Log.e("Count", "" + dataSnapshot.getChildrenCount());
+                        for (DataSnapshot mydata : dataSnapshot.getChildren()) {
                             Student s = mydata.getValue(Student.class);
 
-                            Log.e("MY Email",""+s.getEmailId());
-                            Log.e("MY Name ",""+s.getName());
-                            Log.e("MY age",""+s.getAge());
+                            Log.e("MY Email", "" + s.getEmailId());
+                            Log.e("MY Name ", "" + s.getName());
+                            Log.e("MY age", "" + s.getAge());
 
                         }
 
@@ -109,16 +127,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-
-            }
-        });
     }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
