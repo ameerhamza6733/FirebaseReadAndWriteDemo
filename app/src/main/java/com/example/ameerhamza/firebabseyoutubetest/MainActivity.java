@@ -12,6 +12,8 @@ import android.provider.ContactsContract;
 import android.speech.RecognizerIntent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
@@ -23,6 +25,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseListAdapter;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -35,20 +38,12 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
-
-
-    private Button mbutton;
-    private Button readFromDataBase;
-    private EditText mName;
-    private EditText mEmail;
-    private EditText mAge;
-
-
     private Student student;
     private String TAG="MainActivity";
     private DatabaseReference myRef;
-    private ListView myListView;
+
     private FirebaseListAdapter<Student> mAdapter;
+    private RecyclerView recyclerView;
 
 
     @Override
@@ -62,7 +57,9 @@ public class MainActivity extends AppCompatActivity {
 //        mAge = (EditText) findViewById(R.id.mUploadAge);
 
 
-        myListView= (ListView) findViewById(R.id.my_lsit_view);
+        recyclerView= (RecyclerView) findViewById(R.id.my_Recylerivew_);
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         //DataBase raf
@@ -71,16 +68,21 @@ public class MainActivity extends AppCompatActivity {
         myRef.keepSynced(true);
 
 
-        mAdapter = new FirebaseListAdapter<Student>(this, Student.class, android.R.layout.simple_list_item_1, myRef) {
+        FirebaseRecyclerAdapter<Student,myViewHolader> adapter = new FirebaseRecyclerAdapter<Student, myViewHolader>(
+
+
+                Student.class,android.R.layout.two_line_list_item,myViewHolader.class,myRef
+        ) {
             @Override
-            protected void populateView(View view, Student data, int position) {
-                ((TextView)view.findViewById(android.R.id.text1)).setText(data.getEmailId());
+            protected void populateViewHolder(myViewHolader viewHolder, Student model, int position) {
 
 
+                viewHolder.myTextView.setText(model.getName());
 
             }
         };
-        myListView.setAdapter(mAdapter);
+
+        recyclerView.setAdapter(adapter);
 
 
 //
@@ -143,6 +145,19 @@ public class MainActivity extends AppCompatActivity {
 //        });
 //
 
+    }
+
+
+    public static class myViewHolader extends  RecyclerView.ViewHolder{
+
+        public TextView myTextView;
+
+
+        public myViewHolader(View itemView) {
+            super(itemView);
+
+            myTextView= (TextView) itemView.findViewById(android.R.id.text1);
+        }
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

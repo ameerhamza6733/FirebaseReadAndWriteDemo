@@ -79,8 +79,8 @@ android:orientation="vertical"
         <!--android:layout_alignStart="@+id/m_read_button"-->
         <!--android:layout_marginLeft="28dp"-->
         <!--android:layout_marginStart="28dp" />-->
-    <ListView
+    <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/my_lsit_view" />
+        android:id="@+id/my_Recylerivew_" />
 </LinearLayout>
