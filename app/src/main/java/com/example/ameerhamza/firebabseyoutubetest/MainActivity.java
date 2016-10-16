@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraManager;
+import android.opengl.EGLExt;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -60,30 +61,33 @@ public class MainActivity extends AppCompatActivity {
         recyclerView= (RecyclerView) findViewById(R.id.my_Recylerivew_);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setHasFixedSize(true);
 
         FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         //DataBase raf
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         myRef = database.getReference();
+
         myRef.keepSynced(true);
 
 
         FirebaseRecyclerAdapter<Student,myViewHolader> adapter = new FirebaseRecyclerAdapter<Student, myViewHolader>(
 
 
-                Student.class,android.R.layout.two_line_list_item,myViewHolader.class,myRef
+                Student.class,R.layout.item_row,myViewHolader.class,myRef
         ) {
             @Override
             protected void populateViewHolder(myViewHolader viewHolder, Student model, int position) {
 
 
-                viewHolder.myTextView.setText(model.getName());
+                viewHolder.EmailTextView.setText(model.getEmailId());
+                viewHolder.NameTextView.setText(model.getName());
+                viewHolder.AgeTextView.setText(String.valueOf(model.getAge()));
 
             }
         };
 
         recyclerView.setAdapter(adapter);
-
 
 //
 //        readFromDataBase = (Button) findViewById(R.id.m_read_button);
@@ -147,16 +151,18 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
     public static class myViewHolader extends  RecyclerView.ViewHolder{
 
-        public TextView myTextView;
+        public TextView NameTextView,AgeTextView,EmailTextView;
 
 
         public myViewHolader(View itemView) {
             super(itemView);
 
-            myTextView= (TextView) itemView.findViewById(android.R.id.text1);
+           NameTextView= (TextView) itemView.findViewById(R.id.nameTextView);
+            AgeTextView= (TextView) itemView.findViewById(R.id.AgetextView);
+            EmailTextView= (TextView) itemView.findViewById(R.id.EmailtextView);
+
         }
     }
     @Override
