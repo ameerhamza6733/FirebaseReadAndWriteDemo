@@ -42,9 +42,12 @@ public class MainActivity extends AppCompatActivity {
     private Student student;
     private String TAG="MainActivity";
     private DatabaseReference myRef;
+    private Button button;
+
 
     private FirebaseListAdapter<Student> mAdapter;
     private RecyclerView recyclerView;
+    private int i;
 
 
     @Override
@@ -58,7 +61,10 @@ public class MainActivity extends AppCompatActivity {
 //        mAge = (EditText) findViewById(R.id.mUploadAge);
 
 
+
         recyclerView= (RecyclerView) findViewById(R.id.my_Recylerivew_);
+
+
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setHasFixedSize(true);
@@ -69,6 +75,8 @@ public class MainActivity extends AppCompatActivity {
         myRef = database.getReference();
 
         myRef.keepSynced(true);
+
+
 
 
         FirebaseRecyclerAdapter<Student,myViewHolader> adapter = new FirebaseRecyclerAdapter<Student, myViewHolader>(
@@ -88,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
         };
 
         recyclerView.setAdapter(adapter);
+
 
 //
 //        readFromDataBase = (Button) findViewById(R.id.m_read_button);
