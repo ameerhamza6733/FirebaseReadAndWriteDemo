@@ -1,17 +1,11 @@
 package com.example.ameerhamza.firebabseyoutubetest;
 
-import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.hardware.Camera;
-import android.hardware.camera2.CameraAccessException;
-import android.hardware.camera2.CameraManager;
-import android.opengl.EGLExt;
-import android.os.Build;
+
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
-import android.provider.ContactsContract;
-import android.speech.RecognizerIntent;
-import android.support.design.widget.FloatingActionButton;
+
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,33 +15,37 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseListAdapter;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Locale;
+import java.io.ByteArrayOutputStream;
+import java.util.UUID;
+
 
 public class MainActivity extends AppCompatActivity {
     private Student student;
     private String TAG="MainActivity";
     private DatabaseReference myRef;
-    private Button button;
-
-
+    private Button UploadButton;
     private FirebaseListAdapter<Student> mAdapter;
     private RecyclerView recyclerView;
+    private ImageView mImageView;
     private int i;
+    private ListView listView;
+    FirebaseStorage storage = FirebaseStorage.getInstance();
+
+//    private FirebaseRecyclerAdapter<Student, myViewHolader> adapter;
 
 
     @Override
@@ -61,71 +59,103 @@ public class MainActivity extends AppCompatActivity {
 //        mAge = (EditText) findViewById(R.id.mUploadAge);
 
 
+        UploadButton = (Button) findViewById(R.id.UploadButton);
+        mImageView = (ImageView) findViewById(R.id.mImageView);
 
-        recyclerView= (RecyclerView) findViewById(R.id.my_Recylerivew_);
+//
+//        recyclerView = (RecyclerView) findViewById(R.id.my_Recylerivew_);
+//        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+//        recyclerView.setHasFixedSize(true);
 
-
-
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setHasFixedSize(true);
 
         FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         //DataBase raf
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         myRef = database.getReference();
-
         myRef.keepSynced(true);
 
+//        for(int i=0;i<5 ;i++)
+//        {
+//            Student s = new Student( "ameerhamz@",i,"Hamza");
+//            myRef.push().setValue(s);
+//
+//        }
+
+        // Write a message to the database
 
 
-
-        FirebaseRecyclerAdapter<Student,myViewHolader> adapter = new FirebaseRecyclerAdapter<Student, myViewHolader>(
-
-
-                Student.class,R.layout.item_row,myViewHolader.class,myRef
-        ) {
+        UploadButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            protected void populateViewHolder(myViewHolader viewHolder, Student model, int position) {
+            public void onClick(View v) {
 
 
-                viewHolder.EmailTextView.setText(model.getEmailId());
-                viewHolder.NameTextView.setText(model.getName());
-                viewHolder.AgeTextView.setText(String.valueOf(model.getAge()));
+                // Get the data from an ImageView as bytes
+                mImageView.setDrawingCacheEnabled(true);
+                mImageView.buildDrawingCache();
+                Bitmap bitmap = mImageView.getDrawingCache();
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                byte[] data = baos.toByteArray();
+
+                String path = "Firenamee/" + UUID.randomUUID() + ".png";
+
+
+                StorageReference storageRef = storage.getReference(path);
+
+                UploadTask uploadTask = storageRef.putBytes(data);
+                uploadTask.addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle unsuccessful uploads
+                    }
+                }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                        Uri downloadUrl = taskSnapshot.getDownloadUrl();
+
+                        Log.d("onSuccess", "" + downloadUrl);
+
+
+                    }
+                });
+
 
             }
-        };
-
-        recyclerView.setAdapter(adapter);
-
-
+        });
+    }
+//        adapter = new FirebaseRecyclerAdapter<Student, myViewHolader>(
+//                Student.class, R.layout.item_row, myViewHolader.class, myRef
+//        ) {
+//            @Override
+//            protected void populateViewHolder(myViewHolader viewHolder, Student model, final int position) {
+//
+//
+//                viewHolder.NameTextView.setText(model.getName());
+//                viewHolder.EmailTextView.setText(model.getEmailId());
+//                viewHolder.AgeTextView.setText(String.valueOf(model.getAge()));
+//                Log.e("myFirebase UID", adapter.getRef(position).getKey());
+//                viewHolder.mView.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        Log.e("Item Cick position ",""+position);
+//                        //remove node
+//                        adapter.getRef(+position).removeValue();
+//                    }
+//                });
+//
+//
+//
+//            }
+//        };
+//        recyclerView.setAdapter(adapter);
 //
 //        readFromDataBase = (Button) findViewById(R.id.m_read_button);
 //
 //        // Write to database
-//        mbutton = (Button) findViewById(R.id.m_button);
-//        mbutton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//                // String outout=new Translate(sl, tl, text)
-//
-//
-//                student = new Student(mEmail.getText().toString(), Integer.parseInt(mAge.getText().toString()), mName.getText().toString());
-//
-//                // Write a message to the database
-//
-//                myRef.push().setValue(student);
-//
-//
-//                mName.getText().clear();
-//                mEmail.getText().clear();
-//                mAge.getText().clear();
-//
-//
-//            }
-//        });
-//
-//
+
+
+
 //// ...
 //
 //        readFromDataBase.setOnClickListener(new View.OnClickListener() {
@@ -157,23 +187,29 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //        });
 //
-
-    }
-
-    public static class myViewHolader extends  RecyclerView.ViewHolder{
-
-        public TextView NameTextView,AgeTextView,EmailTextView;
-
-
-        public myViewHolader(View itemView) {
-            super(itemView);
-
-           NameTextView= (TextView) itemView.findViewById(R.id.nameTextView);
-            AgeTextView= (TextView) itemView.findViewById(R.id.AgetextView);
-            EmailTextView= (TextView) itemView.findViewById(R.id.EmailtextView);
-
-        }
-    }
+//
+//    }
+//
+//    public static class myViewHolader extends  RecyclerView.ViewHolder {
+//
+//        public TextView NameTextView,AgeTextView,EmailTextView;
+//        public View mView;
+//
+//
+//        public myViewHolader(View itemView) {
+//            super(itemView);
+//
+//           NameTextView= (TextView) itemView.findViewById(R.id.nameTextView);
+//            AgeTextView= (TextView) itemView.findViewById(R.id.AgetextView);
+//            EmailTextView= (TextView) itemView.findViewById(R.id.EmailtextView);
+//            mView=itemView;
+//
+//
+//
+//        }
+//
+//
+//    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -184,7 +220,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
+        // automatically handle clicks on the Home/Up UploadButton, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 

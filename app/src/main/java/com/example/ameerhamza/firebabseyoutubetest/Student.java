@@ -9,11 +9,19 @@ public class Student {
     private  String name;
     private String emailId;
     private int age;
+    private String myKey;
+
+    public String getMyKey() {
+        return myKey;
+    }
 
     public Student(String emailId, int age, String name) {
         this.emailId = emailId;
         this.age = age;
         this.name = name;
+    }
+
+    public Student() {
     }
 
     public String getName() {
@@ -28,6 +36,5 @@ public class Student {
         return emailId;
     }
 
-    public Student() {
-    }
+
 }
