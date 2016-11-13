@@ -19,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+
 import com.firebase.ui.database.FirebaseListAdapter;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -28,6 +29,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.util.UUID;
@@ -44,6 +46,9 @@ public class MainActivity extends AppCompatActivity {
     private int i;
     private ListView listView;
     FirebaseStorage storage = FirebaseStorage.getInstance();
+    private StorageReference storageRef;
+    private Button DownloadButtonImage;
+    private Uri downloadUrl;
 
 //    private FirebaseRecyclerAdapter<Student, myViewHolader> adapter;
 
@@ -61,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
 
         UploadButton = (Button) findViewById(R.id.UploadButton);
         mImageView = (ImageView) findViewById(R.id.mImageView);
+        DownloadButtonImage= (Button) findViewById(R.id.buttonDownload);
 
 //
 //        recyclerView = (RecyclerView) findViewById(R.id.my_Recylerivew_);
@@ -96,11 +102,8 @@ public class MainActivity extends AppCompatActivity {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
                 byte[] data = baos.toByteArray();
-
                 String path = "Firenamee/" + UUID.randomUUID() + ".png";
-
-
-                StorageReference storageRef = storage.getReference(path);
+                storageRef = storage.getReference(path);
 
                 UploadTask uploadTask = storageRef.putBytes(data);
                 uploadTask.addOnFailureListener(new OnFailureListener() {
@@ -112,7 +115,11 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                         // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                        Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                         downloadUrl = taskSnapshot.getDownloadUrl();
+
+                        Student s =  new Student("ameerhamza6733@gmail.com",19,"hamza",downloadUrl.toString());
+
+                        myRef.push().setValue(s);
 
                         Log.d("onSuccess", "" + downloadUrl);
 
@@ -123,6 +130,18 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+//        DownloadButtonImage.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//
+//                ImageView imageView = (ImageView) findViewById(R.id.mDownloadImageView);
+//
+//                Picasso.with(MainActivity.this).load(downloadUrl.toString()).into(imageView);
+//
+//
+//            }
+//        });
     }
 //        adapter = new FirebaseRecyclerAdapter<Student, myViewHolader>(
 //                Student.class, R.layout.item_row, myViewHolader.class, myRef

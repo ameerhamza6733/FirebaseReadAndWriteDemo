@@ -81,7 +81,7 @@ android:orientation="vertical"
         <!--android:layout_marginStart="28dp" />-->
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="36dp"
         android:id="@+id/my_Recylerivew_" />
 
     <Button
@@ -93,7 +93,19 @@ android:orientation="vertical"
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="250dp"
-        app:srcCompat="@drawable/googlef"
+        app:srcCompat="@drawable/com_facebook_profile_picture_blank_portrait"
         android:id="@+id/mImageView" />
+
+    <Button
+        android:text="showImageFromFirebase"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/buttonDownload" />
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/com_facebook_tooltip_blue_xout"
+        android:id="@+id/mDownloadImageView" />
 
 </LinearLayout>

@@ -10,15 +10,21 @@ public class Student {
     private String emailId;
     private int age;
     private String myKey;
+    private  String imageurl;
+
+    public String getImageurl() {
+        return imageurl;
+    }
 
     public String getMyKey() {
         return myKey;
     }
 
-    public Student(String emailId, int age, String name) {
+    public Student(String emailId, int age, String name,String imageurl) {
         this.emailId = emailId;
         this.age = age;
         this.name = name;
+        this.imageurl=imageurl;
     }
 
     public Student() {
