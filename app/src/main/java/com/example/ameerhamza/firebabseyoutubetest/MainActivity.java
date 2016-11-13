@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
                         myRef.push().setValue(s);
 
                         Log.d("onSuccess", "" + downloadUrl);
-
+//
 
                     }
                 });
