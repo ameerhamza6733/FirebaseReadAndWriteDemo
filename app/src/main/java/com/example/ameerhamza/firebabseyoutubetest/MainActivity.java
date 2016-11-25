@@ -32,6 +32,7 @@ import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
+import java.net.URL;
 import java.util.UUID;
 
 
@@ -50,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
     private Button DownloadButtonImage;
     private Uri downloadUrl;
 
-//    private FirebaseRecyclerAdapter<Student, myViewHolader> adapter;
+    private FirebaseRecyclerAdapter<Student, myViewHolader> adapter;
 
 
     @Override
@@ -66,15 +67,15 @@ public class MainActivity extends AppCompatActivity {
 
         UploadButton = (Button) findViewById(R.id.UploadButton);
         mImageView = (ImageView) findViewById(R.id.mImageView);
-        DownloadButtonImage= (Button) findViewById(R.id.buttonDownload);
-
-//
-//        recyclerView = (RecyclerView) findViewById(R.id.my_Recylerivew_);
-//        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-//        recyclerView.setHasFixedSize(true);
+//        DownloadButtonImage = (Button) findViewById(R.id.buttonDownload);
 
 
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+        recyclerView = (RecyclerView) findViewById(R.id.my_Recylerivew_);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setHasFixedSize(true);
+
+
+//        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         //DataBase raf
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         myRef = database.getReference();
@@ -115,9 +116,9 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                         // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                         downloadUrl = taskSnapshot.getDownloadUrl();
+                        downloadUrl = taskSnapshot.getDownloadUrl();
 
-                        Student s =  new Student("ameerhamza6733@gmail.com",19,"hamza",downloadUrl.toString());
+                        Student s = new Student("ameerhamza6733@gmail.com", 19, "hamza", downloadUrl.toString());
 
                         myRef.push().setValue(s);
 
@@ -142,37 +143,39 @@ public class MainActivity extends AppCompatActivity {
 //
 //            }
 //        });
-    }
-//        adapter = new FirebaseRecyclerAdapter<Student, myViewHolader>(
-//                Student.class, R.layout.item_row, myViewHolader.class, myRef
-//        ) {
-//            @Override
-//            protected void populateViewHolder(myViewHolader viewHolder, Student model, final int position) {
-//
-//
-//                viewHolder.NameTextView.setText(model.getName());
-//                viewHolder.EmailTextView.setText(model.getEmailId());
-//                viewHolder.AgeTextView.setText(String.valueOf(model.getAge()));
-//                Log.e("myFirebase UID", adapter.getRef(position).getKey());
-//                viewHolder.mView.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        Log.e("Item Cick position ",""+position);
-//                        //remove node
-//                        adapter.getRef(+position).removeValue();
-//                    }
-//                });
-//
-//
-//
-//            }
-//        };
-//        recyclerView.setAdapter(adapter);
+
+        adapter = new FirebaseRecyclerAdapter<Student, myViewHolader>(
+                Student.class, R.layout.item_row, myViewHolader.class, myRef
+        ) {
+            @Override
+            protected void populateViewHolder(myViewHolader viewHolder, Student model, final int position) {
+
+
+                viewHolder.NameTextView.setText(model.getName());
+                viewHolder.EmailTextView.setText(model.getEmailId());
+                viewHolder.AgeTextView.setText(String.valueOf(model.getAge()));
+                Picasso.with(MainActivity.this).load(model.getImageurl()).into(viewHolder.imageView);
+
+//                Picasso.with(MainActivity.this).load(model.getImageurl()).into(viewHolder.imageView);
+                Log.e("myFirebase UID", adapter.getRef(position).getKey());
+                //Item click listerer
+                viewHolder.mView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.e("Item Cick position ", "" + position);
+                        //remove node
+                        adapter.getRef(+position).removeValue();
+                    }
+                });
+
+
+            }
+        };
+        recyclerView.setAdapter(adapter);
 //
 //        readFromDataBase = (Button) findViewById(R.id.m_read_button);
 //
 //        // Write to database
-
 
 
 //// ...
@@ -209,26 +212,31 @@ public class MainActivity extends AppCompatActivity {
 //
 //    }
 //
-//    public static class myViewHolader extends  RecyclerView.ViewHolder {
-//
-//        public TextView NameTextView,AgeTextView,EmailTextView;
-//        public View mView;
-//
-//
-//        public myViewHolader(View itemView) {
-//            super(itemView);
-//
-//           NameTextView= (TextView) itemView.findViewById(R.id.nameTextView);
-//            AgeTextView= (TextView) itemView.findViewById(R.id.AgetextView);
-//            EmailTextView= (TextView) itemView.findViewById(R.id.EmailtextView);
-//            mView=itemView;
-//
-//
-//
-//        }
-//
-//
-//    }
+    }
+        public static class myViewHolader extends RecyclerView.ViewHolder {
+
+            public TextView NameTextView, AgeTextView, EmailTextView;
+          public ImageView imageView;
+            public View mView;
+
+
+            public myViewHolader(View itemView) {
+                super(itemView);
+
+                NameTextView = (TextView) itemView.findViewById(R.id.nameTextView);
+                AgeTextView = (TextView) itemView.findViewById(R.id.AgetextView);
+                EmailTextView = (TextView) itemView.findViewById(R.id.EmailtextView);
+                imageView= (ImageView) itemView.findViewById(R.id.imageView);
+//                imageView= (ImageView) itemView.findViewById(R.id.imageView);
+
+                mView = itemView;
+
+
+            }
+
+
+        }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
